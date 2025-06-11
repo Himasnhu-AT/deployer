@@ -26,10 +26,10 @@
  * • Access configuration throughout the application
  * • Switch regions or profiles as needed
  * 
- * @author Deployer CLI Team
+ * @author Himanshu
  * @version 1.0.0
- * @since 2024
- * @license MIT
+ * @since 2025
+ * @license BSD-3-Clause
  */
 
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';

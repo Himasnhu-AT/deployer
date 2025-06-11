@@ -29,10 +29,10 @@
  * • Elastic IPs cost when unattached
  * • Data transfer charges apply
  * 
- * @author Deployer CLI Team
+ * @author Himanshu
  * @version 1.0.0
- * @since 2024
- * @license MIT
+ * @since 2025
+ * @license BSD-3-Clause
  */
 
 import {
@@ -275,12 +275,35 @@ export class AWSService {
         const securityGroupId = result.GroupId!;
         logger.debug('Security group created', { securityGroupId, groupName });
 
-        // Add inbound rules if specified
+        // Determine inbound rules to apply
+        let inboundRules: SecurityRule[] = [];
+
         if (options.inbound && options.inbound.length > 0) {
+            // Use explicitly provided rules
             logger.debug('Adding inbound rules', { rules: options.inbound });
-            const inboundRules = options.inbound.map(rule => this.parseSecurityRule(rule));
+            inboundRules = options.inbound.map(rule => this.parseSecurityRule(rule));
+        } else {
+            // Apply intelligent defaults based on Docker image
+            logger.debug('No explicit inbound rules provided, applying intelligent defaults', {
+                dockerImage: options.dockerImage
+            });
+            inboundRules = this.getDefaultInboundRules(options.dockerImage);
+            if (inboundRules.length > 0) {
+                logger.debug('Applied default inbound rules', {
+                    rules: inboundRules.map(r => `${r.cidr}:${r.port}`)
+                });
+            }
+        }
+
+        // Add inbound rules if any are configured
+        if (inboundRules.length > 0) {
             await this.addInboundRules(securityGroupId, inboundRules);
             logger.debug('Inbound rules added', { securityGroupId, rulesCount: inboundRules.length });
+        } else {
+            logger.warn('No inbound rules configured - instance will not be accessible from internet', {
+                dockerImage: options.dockerImage,
+                securityGroupId
+            });
         }
 
         // Add outbound rules if specified (default allows all outbound)
@@ -292,6 +315,101 @@ export class AWSService {
         }
 
         return securityGroupId;
+    }
+
+    /**
+     * Get intelligent default inbound rules based on Docker image
+     * 
+     * Analyzes the Docker image name to determine appropriate default ports
+     * for common web servers, databases, and application frameworks.
+     * 
+     * @param dockerImage - Docker image name and tag
+     * @returns SecurityRule[] - Array of default security rules
+     * 
+     * //? Provides sensible defaults for common containers while maintaining security
+     * //! SECURITY: Only opens commonly needed ports - users can override with --inbound
+     * //TODO: Add support for more container types and port configurations
+     */
+    private getDefaultInboundRules(dockerImage: string): SecurityRule[] {
+        const image = dockerImage.toLowerCase();
+        const defaultRules: SecurityRule[] = [];
+
+        // Web servers - allow HTTP and HTTPS
+        if (image.includes('nginx') ||
+            image.includes('apache') ||
+            image.includes('httpd') ||
+            image.includes('caddy') ||
+            image.includes('traefik')) {
+            defaultRules.push(
+                { cidr: '0.0.0.0/0', port: 80, protocol: 'tcp' },   // HTTP
+                { cidr: '0.0.0.0/0', port: 443, protocol: 'tcp' }   // HTTPS
+            );
+            logger.debug('Applied web server defaults (HTTP/HTTPS)', { dockerImage });
+        }
+        // Node.js applications - common development ports
+        else if (image.includes('node') || image.includes('npm')) {
+            defaultRules.push(
+                { cidr: '0.0.0.0/0', port: 3000, protocol: 'tcp' },  // Common Node.js port
+                { cidr: '0.0.0.0/0', port: 8080, protocol: 'tcp' }   // Alternative web port
+            );
+            logger.debug('Applied Node.js defaults', { dockerImage });
+        }
+        // Python web applications
+        else if (image.includes('python') || image.includes('django') || image.includes('flask')) {
+            defaultRules.push(
+                { cidr: '0.0.0.0/0', port: 8000, protocol: 'tcp' },  // Django/Flask common port
+                { cidr: '0.0.0.0/0', port: 5000, protocol: 'tcp' }   // Flask default port
+            );
+            logger.debug('Applied Python web app defaults', { dockerImage });
+        }
+        // Java applications
+        else if (image.includes('java') || image.includes('tomcat') || image.includes('spring')) {
+            defaultRules.push(
+                { cidr: '0.0.0.0/0', port: 8080, protocol: 'tcp' },  // Tomcat/Spring Boot
+                { cidr: '0.0.0.0/0', port: 9090, protocol: 'tcp' }   // Alternative Java port
+            );
+            logger.debug('Applied Java application defaults', { dockerImage });
+        }
+        // PHP applications
+        else if (image.includes('php') || image.includes('wordpress') || image.includes('drupal')) {
+            defaultRules.push(
+                { cidr: '0.0.0.0/0', port: 80, protocol: 'tcp' },   // HTTP
+                { cidr: '0.0.0.0/0', port: 443, protocol: 'tcp' }   // HTTPS
+            );
+            logger.debug('Applied PHP application defaults', { dockerImage });
+        }
+        // Databases - only allow from private networks for security
+        else if (image.includes('mysql') || image.includes('mariadb')) {
+            defaultRules.push(
+                { cidr: '10.0.0.0/8', port: 3306, protocol: 'tcp' }   // MySQL from private networks only
+            );
+            logger.debug('Applied MySQL defaults (private network only)', { dockerImage });
+        }
+        else if (image.includes('postgres') || image.includes('postgresql')) {
+            defaultRules.push(
+                { cidr: '10.0.0.0/8', port: 5432, protocol: 'tcp' }   // PostgreSQL from private networks only
+            );
+            logger.debug('Applied PostgreSQL defaults (private network only)', { dockerImage });
+        }
+        else if (image.includes('redis')) {
+            defaultRules.push(
+                { cidr: '10.0.0.0/8', port: 6379, protocol: 'tcp' }   // Redis from private networks only
+            );
+            logger.debug('Applied Redis defaults (private network only)', { dockerImage });
+        }
+        else if (image.includes('mongodb') || image.includes('mongo')) {
+            defaultRules.push(
+                { cidr: '10.0.0.0/8', port: 27017, protocol: 'tcp' }  // MongoDB from private networks only
+            );
+            logger.debug('Applied MongoDB defaults (private network only)', { dockerImage });
+        }
+        // Unknown images - no defaults for security
+        else {
+            logger.debug('No default rules for unknown image type', { dockerImage });
+            logger.info(`💡 Tip: For custom applications, use --inbound to specify ports (e.g., --inbound 0.0.0.0/0:8080)`);
+        }
+
+        return defaultRules;
     }
 
     /**
@@ -375,6 +493,26 @@ export class AWSService {
      */
     private generateUserDataScript(dockerImage: string): string {
         logger.debug('Generating user data script', { dockerImage });
+
+        // Determine port mapping based on image type
+        const image = dockerImage.toLowerCase();
+        let portMapping = '';
+
+        if (image.includes('nginx') || image.includes('apache') || image.includes('httpd')) {
+            portMapping = '-p 80:80 -p 443:443';
+        } else if (image.includes('node')) {
+            portMapping = '-p 3000:3000 -p 8080:8080';
+        } else if (image.includes('python') || image.includes('django') || image.includes('flask')) {
+            portMapping = '-p 8000:8000 -p 5000:5000';
+        } else if (image.includes('java') || image.includes('tomcat') || image.includes('spring')) {
+            portMapping = '-p 8080:8080 -p 9090:9090';
+        } else if (image.includes('php') || image.includes('wordpress') || image.includes('drupal')) {
+            portMapping = '-p 80:80 -p 443:443';
+        } else {
+            // Default mapping for unknown images - expose common web ports
+            portMapping = '-p 80:80 -p 8080:8080';
+        }
+
         const script = `#!/bin/bash
 # Update system packages
 yum update -y
@@ -390,13 +528,18 @@ yum install -y amazon-ssm-agent
 systemctl start amazon-ssm-agent
 systemctl enable amazon-ssm-agent
 
-# Pull and run Docker container
+# Pull and run Docker container with appropriate port mapping
 docker pull ${dockerImage}
-docker run -d --name deployed-container --restart unless-stopped ${dockerImage}
+docker run -d --name deployed-container --restart unless-stopped ${portMapping} ${dockerImage}
 
 # Log container status for debugging
 docker ps > /var/log/deployer-container.log
 echo "Deployment completed at $(date)" >> /var/log/deployer-container.log
+echo "Port mapping: ${portMapping}" >> /var/log/deployer-container.log
+
+# Additional logging for troubleshooting
+docker logs deployed-container >> /var/log/deployer-container.log 2>&1
+netstat -tuln >> /var/log/deployer-container.log
 `;
         logger.debug('User data script generated', { scriptLength: script.length });
         return script;

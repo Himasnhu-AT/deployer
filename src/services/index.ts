@@ -17,10 +17,10 @@
  * • AWSService - Handles all AWS API interactions and resource management
  * • ConfigService - Manages CLI configuration, credentials, and regional settings
  * 
- * @author Deployer CLI Team
+ * @author Himanshu
  * @version 1.0.0
- * @since 2024
- * @license MIT
+ * @since 2025
+ * @license BSD-3-Clause
  */
 
 // AWS Infrastructure Management Service
