@@ -25,15 +25,18 @@
         "gpu",
         "serverless"
     ],
-    "author": "Your Name <your.email@example.com>",
-    "license": "MIT",
+    "author": {
+        "name": "Himanshu",
+        "email": "hyattherate2005@gmail.com"
+    },
+    "license": "BSD-3-Clause",
     "repository": {
         "type": "git",
-        "url": "https://github.com/yourusername/deployer.git"
+        "url": "https://github.com/himasnhu-at/deployer.git"
     },
-    "homepage": "https://github.com/yourusername/deployer#readme",
+    "homepage": "https://github.com/himasnhu-at/deployer#readme",
     "bugs": {
-        "url": "https://github.com/yourusername/deployer/issues"
+        "url": "https://github.com/himasnhu-at/deployer/issues"
     },
     "dependencies": {
         "@aws-sdk/client-cloudwatch": "^3.826.0",

@@ -27,10 +27,10 @@
  * deployer list --cluster production
  * deployer logs --instance i-1234567890abcdef0
  * 
- * @author Deployer CLI Team
+ * @author Himanshu
  * @version 1.0.0
- * @since 2024
- * @license MIT
+ * @since 2025
+ * @license BSD-3-Clause
  */
 
 import { Command } from 'commander';
