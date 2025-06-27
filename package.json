@@ -1,70 +1,73 @@
 {
-    "name": "deployer",
-    "version": "1.0.0",
-    "description": "Deploy Docker containers to AWS EC2 instances without Kubernetes or managed clusters",
-    "main": "dist/index.js",
-    "bin": {
-        "deployer": "dist/index.js"
-    },
-    "scripts": {
-        "build": "tsc",
-        "dev": "tsc --watch",
-        "start": "node dist/index.js",
-        "prepublishOnly": "npm run build",
-        "test": "echo \"No tests specified\" && exit 0",
-        "clean": "rm -rf dist"
-    },
-    "keywords": [
-        "aws",
-        "docker",
-        "ec2",
-        "deployment",
-        "cli",
-        "containers",
-        "autoscaling",
-        "gpu",
-        "serverless"
-    ],
-    "author": {
-        "name": "Himanshu",
-        "email": "hyattherate2005@gmail.com"
-    },
-    "license": "BSD-3-Clause",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/himasnhu-at/deployer.git"
-    },
-    "homepage": "https://github.com/himasnhu-at/deployer#readme",
-    "bugs": {
-        "url": "https://github.com/himasnhu-at/deployer/issues"
-    },
-    "dependencies": {
-        "@aws-sdk/client-cloudwatch": "^3.826.0",
-        "@aws-sdk/client-cloudwatch-logs": "^3.826.0",
-        "@aws-sdk/client-ec2": "^3.0.0",
-        "@aws-sdk/client-iam": "^3.826.0",
-        "@aws-sdk/client-lambda": "^3.826.0",
-        "@aws-sdk/client-route-53": "^3.826.0",
-        "@aws-sdk/client-secrets-manager": "^3.826.0",
-        "@aws-sdk/client-ssm": "^3.826.0",
-        "@aws-sdk/client-sts": "^3.826.0",
-        "@types/inquirer": "^9.0.8",
-        "chalk": "^4.1.2",
-        "commander": "^11.0.0",
-        "inquirer": "^12.6.3",
-        "ora": "^5.4.1",
-        "winston": "^3.17.0"
-    },
-    "devDependencies": {
-        "@types/node": "^20.0.0",
-        "typescript": "^5.0.0"
-    },
-    "engines": {
-        "node": ">=16.0.0"
-    },
-    "files": [
-        "dist/**/*",
-        "README.md",
-        "LICENSE"
-    ]
+  "name": "deployer",
+  "version": "0.0.1",
+  "description": "Deploy Docker containers to AWS ECS",
+  "main": "dist/index.js",
+  "bin": {
+    "deployer": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"No tests specified\" && exit 0",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "aws",
+    "docker",
+    "ec2",
+    "deployment",
+    "cli",
+    "containers",
+    "autoscaling",
+    "gpu",
+    "serverless"
+  ],
+  "author": {
+    "name": "Himanshu",
+    "email": "hyattherate2005@gmail.com"
+  },
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/himasnhu-at/deployer.git"
+  },
+  "homepage": "https://github.com/himasnhu-at/deployer#readme",
+  "bugs": {
+    "url": "https://github.com/himasnhu-at/deployer/issues"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.826.0",
+    "@aws-sdk/client-cloudwatch-logs": "^3.835.0",
+    "@aws-sdk/client-cost-explorer": "^3.835.0",
+    "@aws-sdk/client-ec2": "^3.838.0",
+    "@aws-sdk/client-ecs": "^3.837.0",
+    "@aws-sdk/client-elastic-load-balancing-v2": "^3.836.0",
+    "@aws-sdk/client-iam": "^3.826.0",
+    "@aws-sdk/client-lambda": "^3.826.0",
+    "@aws-sdk/client-route-53": "^3.826.0",
+    "@aws-sdk/client-secrets-manager": "^3.826.0",
+    "@aws-sdk/client-ssm": "^3.826.0",
+    "@aws-sdk/client-sts": "^3.826.0",
+    "@types/inquirer": "^9.0.8",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "inquirer": "^12.6.3",
+    "ora": "^5.4.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ]
 }
