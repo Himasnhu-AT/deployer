@@ -4,7 +4,7 @@
   "description": "Deploy Docker containers to AWS ECS",
   "main": "dist/index.js",
   "bin": {
-    "deployer": "dist/index.js"
+    "deployer": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -54,11 +54,13 @@
     "@types/inquirer": "^9.0.8",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
+    "dotenv": "^16.6.0",
     "inquirer": "^12.6.3",
     "ora": "^5.4.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.3",
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   },
