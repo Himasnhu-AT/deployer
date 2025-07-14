@@ -4,12 +4,12 @@
   "description": "Deploy Docker containers to AWS ECS",
   "main": "dist/index.js",
   "bin": {
-    "deployer": "./dist/index.js"
+    "deployer": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node dist/index.js",
+    "start": "node dist/cli.js",
     "prepublishOnly": "npm run build",
     "test": "echo \"No tests specified\" && exit 0",
     "clean": "rm -rf dist"
@@ -42,8 +42,8 @@
     "@aws-sdk/client-cloudwatch": "^3.826.0",
     "@aws-sdk/client-cloudwatch-logs": "^3.835.0",
     "@aws-sdk/client-cost-explorer": "^3.835.0",
-    "@aws-sdk/client-ec2": "^3.838.0",
-    "@aws-sdk/client-ecs": "^3.837.0",
+    "@aws-sdk/client-ec2": "^3.500.0",
+    "@aws-sdk/client-ecs": "^3.500.0",
     "@aws-sdk/client-elastic-load-balancing-v2": "^3.836.0",
     "@aws-sdk/client-iam": "^3.826.0",
     "@aws-sdk/client-lambda": "^3.826.0",
@@ -55,7 +55,9 @@
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "dotenv": "^16.6.0",
-    "inquirer": "^12.6.3",
+    "inquirer": "^9.0.0",
+    "execa": "^8.0.0",
+    "@aws-sdk/client-rds": "^3.500.0",
     "ora": "^5.4.1",
     "winston": "^3.17.0"
   },
@@ -67,6 +69,7 @@
   "engines": {
     "node": ">=16.0.0"
   },
+  "type": "module",
   "files": [
     "dist/**/*",
     "README.md",

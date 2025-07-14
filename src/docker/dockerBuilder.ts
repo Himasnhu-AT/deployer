@@ -1,27 +1,42 @@
-import chalk from "chalk";
-import { spawn } from "child_process";
+import inquirer from "inquirer";
+import { execa } from "execa";
 
-/**
- * Builds a Docker image using the provided image tag.
- * @param dockerImage The tag/name for the Docker image.
- */
-export async function buildDockerImage(dockerImage: string): Promise<void> {
-  console.log(chalk.blue(`🔨 Building Docker image: ${dockerImage}`));
+export async function buildAndPushDockerImage() {
+  const { imageName, dockerfilePath, push } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "imageName",
+      message: "Docker image name (e.g., my-app:latest):",
+      validate: (input: string) => (input ? true : "Image name required"),
+    },
+    {
+      type: "input",
+      name: "dockerfilePath",
+      message: "Path to Dockerfile:",
+      default: "./Dockerfile",
+    },
+    {
+      type: "confirm",
+      name: "push",
+      message: "Push image to registry after build?",
+      default: true,
+    },
+  ]);
 
-  return new Promise((resolve, reject) => {
-    const buildProcess = spawn("docker", ["build", "-t", dockerImage, "."], {
-      stdio: "inherit",
-    });
-
-    buildProcess.on("close", (code) => {
-      if (code === 0) {
-        console.log(
-          chalk.green(`✓ Docker image built successfully: ${dockerImage}`)
-        );
-        resolve();
-      } else {
-        reject(new Error(`Docker build failed with code ${code}`));
-      }
-    });
-  });
+  try {
+    console.log(`Building image ${imageName}...`);
+    await execa(
+      "docker",
+      ["build", "-t", imageName, "-f", dockerfilePath, "."],
+      { stdio: "inherit" }
+    );
+    console.log("Build complete!");
+    if (push) {
+      console.log(`Pushing image ${imageName}...`);
+      await execa("docker", ["push", imageName], { stdio: "inherit" });
+      console.log("Push complete!");
+    }
+  } catch (err) {
+    console.error("Docker build/push failed:", err);
+  }
 }
