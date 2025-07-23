@@ -1,5 +1,5 @@
 {
-  "name": "deployer",
+  "name": "@deployer/aws",
   "version": "0.0.1",
   "description": "Deploy Docker containers to AWS ECS",
   "main": "dist/index.js",
