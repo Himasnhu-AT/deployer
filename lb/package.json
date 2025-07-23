@@ -1,0 +1,41 @@
+{
+  "name": "@deployer/loadbalancer",
+  "version": "1.0.0",
+  "description": "minimilistic configurable load balancer",
+  "private": "true",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc",
+    "start": "SET PORT=80 && node load-balancer.js",
+    "dev:lb": "npx ts-node --files lb.index.ts",
+    "dev:be": "npx ts-node be.index.ts 8081",
+    "start:lb": "node ./dist/lb.index.js",
+    "start:be": "node ./dist/be.index.js 8081"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async-mutex": "^0.4.0",
+    "axios": "^1.5.0",
+    "axios-retry": "^3.8.0",
+    "cluster": "^0.7.7",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6",
+    "https": "^1.0.0",
+    "joi": "^17.11.0",
+    "loadbalancer": "file:",
+    "node-run-cmd": "^1.0.1",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.19",
+    "@types/node": "^20.6.3",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}
