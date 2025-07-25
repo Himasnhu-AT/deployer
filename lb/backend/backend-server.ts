@@ -40,6 +40,12 @@ export class BackendServer implements IBackendServer {
     });
 
     this.server = server;
+    // Increase max concurrent connections for stress testing
+    this.server.maxConnections = 1000;
+    // Add error logging for debugging under load
+    this.server.on("error", (err) => {
+      console.error("Backend server error:", err);
+    });
   }
 
   //

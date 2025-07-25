@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "start": "SET PORT=80 && node load-balancer.js",
-    "dev:lb": "npx ts-node --files lb.index.ts",
+    "start": "export PORT=90 && node load-balancer.js",
+    "dev:lb": "npx ts-node --files lb.index.ts 90",
     "dev:be": "npx ts-node be.index.ts 8081",
     "start:lb": "node ./dist/lb.index.js",
     "start:be": "node ./dist/be.index.js 8081"
